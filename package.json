@@ -30,7 +30,9 @@
 		"url": "https://github.com/elijahjcobb/keybase-bot-builder/issues"
 	},
 	"homepage": "https://github.com/elijahjcobb/keybase-bot-builder#readme",
-	"dependencies": {},
+	"dependencies": {
+		"keybase-bot": "latest"
+	},
 	"devDependencies": {
 		"@types/node": "latest",
 		"typescript": "latest",
