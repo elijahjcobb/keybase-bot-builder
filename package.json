@@ -31,13 +31,17 @@
 	},
 	"homepage": "https://github.com/elijahjcobb/keybase-bot-builder#readme",
 	"dependencies": {
-		"keybase-bot": "latest"
+		"keybase-bot": "latest",
+		"minimist": "latest",
+		"typit": "latest",
+		"@ejc-tsds/dictionary": "latest"
 	},
 	"devDependencies": {
 		"@types/node": "latest",
 		"typescript": "latest",
 		"tslint": "latest",
 		"jest": "latest",
-		"@types/jest": "latest"
+		"@types/jest": "latest",
+		"@types/minimist": "latest"
 	}
 }

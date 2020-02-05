@@ -9,7 +9,7 @@
 		"declarationDir": "dts",
 		"declaration": true,
 		"strict": true,
-		"allowSyntheticDefaultImports": true
+		"esModuleInterop": true
 	},
 	"exclude": [
 		"node_modules"
