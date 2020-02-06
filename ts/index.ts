@@ -71,7 +71,17 @@ type CommandParameters = { [key: string]: Types; } | undefined;
 interface Command {
 	name: string;
 	parameters?: CommandParameters;
-	handler: (message: Message) => Promise<any>;
+	handler: (message: Message, response: Response) => Promise<void>;
+}
+
+class Response {
+
+
+	public async sendFile(value: string): Promise<void> {}
+	public async sendCodeBlock(value: string): Promise<void> {}
+	public async send(value: string | number | boolean): Promise<void> {}
+	public async sendObject(value: object): Promise<void> {}
+	public async sendArray(value: any[]): Promise<void> {}
 }
 
 class Bot {
@@ -97,8 +107,6 @@ class Bot {
 			const commandName: string = commandInput._;
 			const command: Command | undefined = this.commands.get(commandName);
 			if (!command) return;
-
-			const res
 
 
 		})
@@ -131,10 +139,10 @@ class Bot {
 			x: "number",
 			y: "number"
 		},
-		handler: async (message: Message): Promise<any> => {
+		handler: async (message: Message, res: Response): Promise<void> => {
 
 			const body: {x: number, y: number} = message.getParameters();
-			return body.x + body.y;
+			await res.send(body.x + body.y);
 
 		}
 	});
