@@ -10,4 +10,4 @@ export {KBBot} from "./KBBot";
 export {KBCommand} from "./KBCommand";
 export {KBMessage} from "./KBMessage";
 export {KBResponse} from "./KBResponse";
-export {KBCommandParameters, KBTypes} from "./KBTypes";
+export {KBCommandModifiers, KBTypes} from "./KBTypes";

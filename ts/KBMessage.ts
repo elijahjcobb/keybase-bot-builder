@@ -1,18 +1,18 @@
 import {MsgSummary} from "keybase-bot/lib/types/chat1";
-import {KBCommandParameters} from "./KBTypes";
+import {KBCommandModifiers} from "./KBTypes";
 import { ObjectTypeDefinition, StandardType, ObjectType } from "typit";
 
 export class KBMessage {
 
-	private readonly parameters: KBCommandParameters;
+	private readonly modifierTypeRequirements: KBCommandModifiers;
 	private readonly message: MsgSummary;
-	private readonly command: object;
+	private readonly convertedMessage: object;
 
-	public constructor(message: MsgSummary, command: object, parameters: KBCommandParameters) {
+	public constructor(message: MsgSummary, command: object, parameters: KBCommandModifiers) {
 
 		this.message = message;
-		this.parameters = parameters;
-		this.command = command;
+		this.modifierTypeRequirements = parameters;
+		this.convertedMessage = command;
 
 	}
 
@@ -25,13 +25,22 @@ export class KBMessage {
 
 	}
 
-	public getParameters<T extends object = object>(): T {
+	public getParameters(): (string | number)[] {
 
-		if (this.parameters === undefined) throw new Error("Type parameters undefined but getParameters() was called.");
+		const msg: {_: string[]} = (this.convertedMessage as {_: string[]});
+		const params: string[] = msg["_"];
+
+		return params.slice(1);
+
+	}
+
+	public getModifiers<T extends object = object>(): T {
+
+		if (this.modifierTypeRequirements === undefined) throw new Error("Type requirements undefined but getParameters() was called.");
 
 		const typeDef: ObjectTypeDefinition = {};
 
-		for (const [k, v] of Object.entries(this.parameters)) {
+		for (const [k, v] of Object.entries(this.modifierTypeRequirements)) {
 
 			let value: StandardType<any> = StandardType.BOOLEAN;
 
@@ -45,10 +54,10 @@ export class KBMessage {
 		}
 
 		const typitObj: ObjectType = new ObjectType(typeDef);
-		const doConform: boolean = typitObj.checkConformity(this.command);
+		const doConform: boolean = typitObj.checkConformity(this.convertedMessage);
 		if (!doConform) throw new Error("Parameters do not match specification.");
 
-		return this.command as T;
+		return this.convertedMessage as T;
 	}
 
 }

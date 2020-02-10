@@ -1,2 +1,2 @@
 export type KBTypes = "string" | "number" | "boolean";
-export type KBCommandParameters = { [key: string]: KBTypes; } | undefined;
+export type KBCommandModifiers = { [key: string]: KBTypes; } | undefined;
