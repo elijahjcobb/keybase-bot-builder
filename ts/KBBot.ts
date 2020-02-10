@@ -26,6 +26,68 @@ export class KBBot {
 
 	}
 
+	private async advertiseCommands(): Promise<void> {
+
+		KBLogger.log("Will advertise commands.");
+		const commands: {name: string, description: string, usage: string}[] = [];
+
+		for (const command of this.commands.values()) {
+
+			commands.push({
+				name: command.name,
+				description: "x",
+				usage: JSON.stringify(command.parameters)
+			});
+
+		}
+
+		await this.keybaseBot.chat.advertiseCommands({advertisements: [{type: "public", commands}]});
+		KBLogger.log("Did advertise commands.");
+	}
+
+	private addDefaultCommands(): void {
+
+		KBLogger.log("Will add default commands.");
+
+		this.command({
+			name: "die",
+			handler: async (message: KBMessage, res: KBResponse): Promise<void> => {
+				await res.send("Bye, bye!");
+				await this.kill();
+			}
+		});
+
+		this.command({
+			name: "clearCommands",
+			handler: async (message: KBMessage, res: KBResponse): Promise<void> => {
+				await this.clearCommands();
+				await res.send("Done!");
+			}
+		});
+
+		this.command({
+			name: "reAdvertiseCommands",
+			handler: async (message: KBMessage, res: KBResponse): Promise<void> => {
+
+				await this.clearCommands();
+				await this.advertiseCommands();
+				await res.send("Done!");
+
+			}
+		});
+
+		KBLogger.log("Did add default commands.");
+
+	}
+
+	private async clearCommands(): Promise<void> {
+
+		KBLogger.log("Will clear commands");
+		await this.keybaseBot.chat.clearCommands();
+		KBLogger.log("Did clear commands");
+
+	}
+
 	public start(): void {
 
 		KBLogger.bot = this.keybaseBot;
@@ -33,14 +95,15 @@ export class KBBot {
 
 		(async(): Promise<void> => {
 
-			KBLogger.log("Will Clear Commands");
-			await this.keybaseBot.chat.clearCommands();
-			KBLogger.log("Did Clear Commands");
+			await this.clearCommands();
+			this.addDefaultCommands();
+			await this.advertiseCommands();
 
 			KBLogger.log("Will watch for messages.");
 			await this.keybaseBot.chat.watchAllChannelsForNewMessages(async (msg: MsgSummary): Promise<void> => {
 
-				const message: string | undefined = msg.content.text?.body;
+				let message: string | undefined = msg.content.text?.body;
+				if (message?.charAt(0) === "!") message = message.slice(1);
 				if (!message) return await this.sendIDKMessage(msg);
 				const messageObj: string[] = message.split(" ");
 				const commandInput: { _: string[] } = Minimist(messageObj) as unknown as {_: string[]};
@@ -66,7 +129,7 @@ export class KBBot {
 
 				} finally {
 
-					KBLogger.log("Did receive control from command handler.");
+					KBLogger.log("Received control from command handler.");
 
 				}
 
@@ -75,7 +138,8 @@ export class KBBot {
 
 			KBLogger.log("Did watch for messages.");
 
-		})().then((): void => console.log("stopped watching"))
+		})()
+			.then((): void => console.log("stopped watching"))
 			.catch((err: any): void => console.error(err));
 
 

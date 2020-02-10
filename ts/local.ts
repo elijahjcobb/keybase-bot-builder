@@ -49,15 +49,6 @@ import {KBBot, KBMessage, KBResponse} from "./index";
 		}
 	});
 
-	bot.command({
-		name: "die",
-		handler: async (message: KBMessage, res: KBResponse): Promise<void> => {
-			await res.send("Bye, bye!");
-			await bot.kill();
-		}
-	});
-
-	bot.enableLogging();
 	bot.start();
 
 })().then((): void => {}).catch((err: any): void => console.error(err));
