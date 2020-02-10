@@ -12,6 +12,7 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"prepublishOnly": "npm run compile",
+		"postpublish": "npm run clean",
 		"compile": "npm run clean && /usr/local/bin/tsc -p tsconfig.json",
 		"watch": "tsc -w -p .",
 		"clean": "rm -rf js && rm -rf dts",
