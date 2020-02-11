@@ -33,8 +33,6 @@ export class KBBot {
 
 		for (const command of this.commands.values()) {
 
-
-
 			commands.push({
 				name: command.name,
 				description: command.description ?? "",
@@ -64,14 +62,14 @@ export class KBBot {
 		this.command({
 			name: "commands",
 			description: "Deal with commands for keybase -l for load, -c for clear.",
-			usage: "!commands -r -c",
+			usage: "!commands -l -c",
 			parameters: {
 				"l": "boolean",
 				"c": "boolean"
 			},
 			handler: async (message: KBMessage, res: KBResponse): Promise<void> => {
 
-				const msg: {l: boolean, c: boolean} = message.getModifiers();
+				const msg: {l?: boolean, c?: boolean} = message.getModifiers();
 
 				if (msg.c) await this.clearCommands();
 				if (msg.l) await this.advertiseCommands();
