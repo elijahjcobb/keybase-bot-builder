@@ -33,10 +33,12 @@ export class KBBot {
 
 		for (const command of this.commands.values()) {
 
+
+
 			commands.push({
 				name: command.name,
-				description: "x",
-				usage: JSON.stringify(command.parameters)
+				description: command.description ?? "",
+				usage: command.usage ?? ""
 			});
 
 		}
@@ -51,6 +53,8 @@ export class KBBot {
 
 		this.command({
 			name: "die",
+			description: "Kill the bot's process.",
+			usage: "!die",
 			handler: async (message: KBMessage, res: KBResponse): Promise<void> => {
 				await res.send("Bye, bye!");
 				await this.kill();
@@ -58,21 +62,20 @@ export class KBBot {
 		});
 
 		this.command({
-			name: "clearCommands",
-			handler: async (message: KBMessage, res: KBResponse): Promise<void> => {
-				await this.clearCommands();
-				await res.send("Done!");
-			}
-		});
-
-		this.command({
-			name: "reAdvertiseCommands",
+			name: "commands",
+			description: "Deal with commands for keybase -l for load, -c for clear.",
+			usage: "!commands -r -c",
+			parameters: {
+				"l": "boolean",
+				"c": "boolean"
+			},
 			handler: async (message: KBMessage, res: KBResponse): Promise<void> => {
 
-				await this.clearCommands();
-				await this.advertiseCommands();
-				await res.send("Done!");
+				const msg: {l: boolean, c: boolean} = message.getModifiers();
 
+				if (msg.c) await this.clearCommands();
+				if (msg.l) await this.advertiseCommands();
+				await res.send("Done!");
 			}
 		});
 
