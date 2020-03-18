@@ -7,11 +7,19 @@ import {KBMessage} from "./KBMessage";
 import {KBResponse} from "./KBResponse";
 import {KBLogger} from "./KBLogger";
 
+/**
+ * The KBBot is the actual thing you will be creating and interfacing with. Create a new instance using the static
+ * init method.
+ */
 export class KBBot {
 
 	private readonly keybaseBot: Keybase;
 	private commands: Dictionary<string, KBCommand>;
 
+	/**
+	 * Do not use!
+	 * @param keybaseBot
+	 */
 	private constructor(keybaseBot: Keybase) {
 
 		this.keybaseBot = keybaseBot;
@@ -19,6 +27,10 @@ export class KBBot {
 
 	}
 
+	/**
+	 * This will send the a message that is much like a 404.
+	 * @param msg
+	 */
 	private async sendIDKMessage(msg: MsgSummary): Promise<void> {
 
 		KBLogger.log("Received invalid command.");
@@ -26,6 +38,9 @@ export class KBBot {
 
 	}
 
+	/**
+	 * This will advertise all commands to the chat window.
+	 */
 	private async advertiseCommands(): Promise<void> {
 
 		KBLogger.log("Will advertise commands.");
@@ -45,6 +60,9 @@ export class KBBot {
 		KBLogger.log("Did advertise commands.");
 	}
 
+	/**
+	 * This will add all the default commands that this package provides.
+	 */
 	private addDefaultCommands(): void {
 
 		KBLogger.log("Will add default commands.");
@@ -81,6 +99,9 @@ export class KBBot {
 
 	}
 
+	/**
+	 * This will clear all the commands that the bot has previously registered.
+	 */
 	private async clearCommands(): Promise<void> {
 
 		KBLogger.log("Will clear commands");
@@ -89,6 +110,9 @@ export class KBBot {
 
 	}
 
+	/**
+	 * This will make the bot start listening for new messages.
+	 */
 	public start(): void {
 
 		KBLogger.bot = this.keybaseBot;
@@ -146,12 +170,32 @@ export class KBBot {
 
 	}
 
+	/**
+	 * This will enable logging on the bot. It is enabled by default.
+	 */
 	public enableLogging(): void { KBLogger.enable(); }
+
+	/**
+	 * This will disable logging on the bot. It is enabled by default.
+	 */
 	public disableLogging(): void { KBLogger.disable(); }
 
+	/**
+	 * This will register a command that the bot can respond to.
+	 * @param command An object following the KBCommand interface.
+	 */
 	public command(command: KBCommand): void { this.commands.set(command.name, command); }
+
+	/**
+	 * This will kill the bot.
+	 */
 	public kill(): Promise<void> { return this.keybaseBot.deinit(); }
 
+	/**
+	 * Use this to create a new bot as it needs to be async.
+	 * @param username The username of the bot.
+	 * @param paperKey A paper key for the bot.
+	 */
 	public static async init(username: string, paperKey: string): Promise<KBBot> {
 
 		const bot: Keybase = new Keybase();

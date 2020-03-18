@@ -2,12 +2,24 @@ import {MsgSummary} from "keybase-bot/lib/types/chat1";
 import {KBCommandModifiers} from "./KBTypes";
 import { ObjectTypeDefinition, StandardType, ObjectType, OptionalType } from "typit";
 
+/**
+ * When the bot receives a message a KBMessage instance is created and provided to you through the handler on a object
+ * passed to command() on a KBBot instance.
+ *
+ * You will never need to create an instance of this class yourself.
+ */
 export class KBMessage {
 
 	private readonly modifierTypeRequirements: KBCommandModifiers;
 	private readonly message: MsgSummary;
 	private readonly convertedMessage: object;
 
+	/**
+	 * You will never need to manually create a KBMessage instance but this is the constructor for one.
+	 * @param message An instance of a MsgSummary from the keybase-bot package.
+	 * @param command The command that is passed in which is parsed from the original message.
+	 * @param parameters The command modifiers specified in the object passed to command() for type checking.
+	 */
 	public constructor(message: MsgSummary, command: object, parameters: KBCommandModifiers) {
 
 		this.message = message;
@@ -16,6 +28,10 @@ export class KBMessage {
 
 	}
 
+	/**
+	 * This will return the raw message that was received and will not parse or type check. It will throw an error if
+	 * the message is undefined.
+	 */
 	public getContent(): string {
 
 		const content: string | undefined = this.message.content.text?.body;
@@ -25,6 +41,9 @@ export class KBMessage {
 
 	}
 
+	/**
+	 * This will return the parameters of the command so if a command is !x 1 2 3 -a A -b B it would return [1, 2, 3].
+	 */
 	public getParameters(): (string | number)[] {
 
 		const msg: {_: string[]} = (this.convertedMessage as {_: string[]});
@@ -34,7 +53,13 @@ export class KBMessage {
 
 	}
 
-	public getModifiers<T extends object = object>(): Partial<T> {
+	/**
+	 * This will return the modifiers on the command. It is also is generic so pass in a type definition for the type
+	 * and it will type check for you during runtime and give you types provided by the generic argument.
+	 *
+	 * If the command is !x 1 2 3 -a A -b B this would return {a: "A", b: "B"}.
+	 */
+	public getModifiers<T extends object = object>(): T {
 
 		if (this.modifierTypeRequirements === undefined) throw new Error("Type requirements undefined but getModifiers() was called.");
 

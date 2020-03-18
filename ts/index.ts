@@ -6,8 +6,11 @@
  */
 
 
-export {KBBot} from "./KBBot";
-export {KBCommand} from "./KBCommand";
-export {KBMessage} from "./KBMessage";
-export {KBResponse} from "./KBResponse";
-export {KBCommandModifiers, KBTypes} from "./KBTypes";
+/**
+ * Exporting all classes.
+ */
+export * from "./KBBot";
+export * from "./KBCommand";
+export * from "./KBMessage";
+export * from "./KBResponse";
+export * from "./KBTypes";

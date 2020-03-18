@@ -1,48 +1,54 @@
 {
-	"name": "@elijahjcobb/keybase-bot-builder",
-	"version": "0.1.3",
-	"description": "A helpful wrapper for Keybase's bot API written in Typescript with added functionality.",
-	"keywords": ["keybase","bot", "build", "typescript", "api"],
-	"main": "js/index",
-	"types": "dts/index",
-	"files": [
-		"js",
-		"dts"
-	],
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"prepublishOnly": "npm run compile",
-		"postpublish": "npm run clean",
-		"compile": "npm run clean && /usr/local/bin/tsc -p tsconfig.json",
-		"watch": "tsc -w -p .",
-		"clean": "rm -rf js && rm -rf dts",
-		"start": "node js/index.js"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/elijahjcobb/keybase-bot-builder.git"
-	},
-	"publishConfig": {
-		"access": "public"
-	},
-	"author": "Elijah Cobb <elijah@elijahcobb.com> (https://elijahcobb.com/)",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/elijahjcobb/keybase-bot-builder/issues"
-	},
-	"homepage": "https://github.com/elijahjcobb/keybase-bot-builder#readme",
-	"dependencies": {
-		"keybase-bot": "latest",
-		"minimist": "latest",
-		"typit": "latest",
-		"@ejc-tsds/dictionary": "latest"
-	},
-	"devDependencies": {
-		"@types/node": "latest",
-		"typescript": "latest",
-		"tslint": "latest",
-		"jest": "latest",
-		"@types/jest": "latest",
-		"@types/minimist": "latest"
-	}
+  "name": "@elijahjcobb/keybase-bot-builder",
+  "version": "0.1.4",
+  "description": "A helpful wrapper for Keybase's bot API written in Typescript with added functionality.",
+  "keywords": [
+    "keybase",
+    "bot",
+    "build",
+    "typescript",
+    "api"
+  ],
+  "main": "js/index",
+  "types": "dts/index",
+  "files": [
+    "js",
+    "dts"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm run compile",
+    "postpublish": "npm run clean",
+    "compile": "npm run clean && /usr/local/bin/tsc -p tsconfig.json",
+    "watch": "tsc -w -p .",
+    "clean": "rm -rf js && rm -rf dts",
+    "start": "node js/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elijahjcobb/keybase-bot-builder.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Elijah Cobb <elijah@elijahcobb.com> (https://elijahcobb.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/elijahjcobb/keybase-bot-builder/issues"
+  },
+  "homepage": "https://github.com/elijahjcobb/keybase-bot-builder#readme",
+  "dependencies": {
+    "keybase-bot": "latest",
+    "minimist": "latest",
+    "typit": "latest",
+    "@ejc-tsds/dictionary": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "typescript": "latest",
+    "tslint": "latest",
+    "jest": "latest",
+    "@types/jest": "latest",
+    "@types/minimist": "latest"
+  }
 }
