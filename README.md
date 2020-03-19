@@ -8,7 +8,13 @@ import {KBBot, KBResponse, KBMessage} from "keybase-bot-builder";
 
 (async (): Promise<void> => {
 	
-	const bot: KBBot = await KBBot.init("the-bot-username", "a-paperkey-for-the-bot");
+    // The third parameter to the KBBot.init() static method is optional but is shown below
+    // with all optional properties defined.
+	const bot: KBBot = await KBBot.init("the-bot-username", "a-paperkey-for-the-bot", {
+        logging: true, // whether all events should be logged
+        debugging: true, // whether debugging mode should be enabled (allows extra commands)
+        hostname: "my-keybase-bot" // the hostname to show up in logs
+    });
 	
 	bot.command({
 		name: "add",
@@ -32,7 +38,6 @@ import {KBBot, KBResponse, KBMessage} from "keybase-bot-builder";
 
 ## Documentation
 Everything is completely documented. You can view the
-[declaration files](https://github.com/elijahjcobb/request/keybase-bot-builder/master/dts) or even the
 [source code](https://github.com/elijahjcobb/keybase-bot-builder/tree/master/ts) on GitHub.
 
 ## Bugs

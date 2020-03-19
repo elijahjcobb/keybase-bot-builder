@@ -8,6 +8,19 @@ import {KBResponse} from "./KBResponse";
 import {KBLogger} from "./KBLogger";
 
 /**
+ * An interface for a configuration profile.
+ *
+ * logging - This will log every event that happens from the bot.
+ * debugging - This will add some debug commands to the bot.
+ * hostname - The name of the host in the logs, defaults to 'keybase'.
+ */
+export interface KBBotConfig {
+	logging?: boolean;
+	debugging?: boolean;
+	hostname?: string;
+}
+
+/**
  * The KBBot is the actual thing you will be creating and interfacing with. Create a new instance using the static
  * init method.
  */
@@ -15,15 +28,23 @@ export class KBBot {
 
 	private readonly keybaseBot: Keybase;
 	private commands: Dictionary<string, KBCommand>;
+	private readonly config: KBBotConfig | undefined;
 
 	/**
 	 * Do not use!
 	 * @param keybaseBot
+	 * @param config
 	 */
-	private constructor(keybaseBot: Keybase) {
+	private constructor(keybaseBot: Keybase, config?: KBBotConfig) {
 
 		this.keybaseBot = keybaseBot;
 		this.commands = new Dictionary<string, KBCommand>();
+		this.config = config;
+
+		if (this.config?.logging === true) KBLogger.enable();
+		else KBLogger.disable();
+
+		if (this.config?.hostname) KBLogger.hostname = this.config.hostname;
 
 	}
 
@@ -121,7 +142,7 @@ export class KBBot {
 		(async(): Promise<void> => {
 
 			await this.clearCommands();
-			this.addDefaultCommands();
+			if (this.config?.debugging === true) this.addDefaultCommands();
 			await this.advertiseCommands();
 
 			KBLogger.log("Will watch for messages.");
@@ -171,16 +192,6 @@ export class KBBot {
 	}
 
 	/**
-	 * This will enable logging on the bot. It is enabled by default.
-	 */
-	public enableLogging(): void { KBLogger.enable(); }
-
-	/**
-	 * This will disable logging on the bot. It is enabled by default.
-	 */
-	public disableLogging(): void { KBLogger.disable(); }
-
-	/**
 	 * This will register a command that the bot can respond to.
 	 * @param command An object following the KBCommand interface.
 	 */
@@ -195,13 +206,14 @@ export class KBBot {
 	 * Use this to create a new bot as it needs to be async.
 	 * @param username The username of the bot.
 	 * @param paperKey A paper key for the bot.
+	 * @param config A configuration profile that follows the KBBotConfig interface.
 	 */
-	public static async init(username: string, paperKey: string): Promise<KBBot> {
+	public static async init(username: string, paperKey: string, config?: KBBotConfig): Promise<KBBot> {
 
 		const bot: Keybase = new Keybase();
 		await bot.init(username, paperKey);
 
-		return new KBBot(bot);
+		return new KBBot(bot, config);
 
 	}
 

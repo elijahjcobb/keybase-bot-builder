@@ -8,13 +8,14 @@ export class KBLogger {
 
 	private static status: boolean = true;
 	public static bot: Keybase;
+	public static hostname: string = "keybase";
 
 	/**
 	 * Will log the message pretty printed.
 	 * @param msg
 	 */
 	public static log(msg: string): void {
-		if (this.status) console.log(this.bot?.myInfo()?.username + "@keybase: " + msg);
+		if (this.status) console.log(this.bot?.myInfo()?.username + "@" + this.hostname + ": " + msg);
 	}
 
 	/**
