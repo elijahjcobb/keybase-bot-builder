@@ -1,12 +1,13 @@
-# keybase-bot-builder
-This is a nice wrapper for a keybase bot that has built in support for type checking and parsing. Also, it has really
-easy methods for sending things to the client and receiving commands.
+/**
+ * Elijah Cobb
+ * elijah@elijahcobb.com
+ * elijahcobb.com
+ * github.com/elijahjcobb
+ */
 
-## Example
-```typescript
 import * as FS from "fs";
 import * as Path from "path";
-import {KBBot, KBResponse, KBMessage, KBConversation} from "keybase-bot-builder";
+import {KBBot, KBResponse, KBMessage, KBConversation} from "./index";
 
 (async (): Promise<void> => {
 
@@ -22,7 +23,7 @@ import {KBBot, KBResponse, KBMessage, KBConversation} from "keybase-bot-builder"
 
 	bot.onNewConversation(async(conv: KBConversation, res: KBResponse): Promise<void> => {
 
-		await res.send(`Hello ${conv.getUserName()}! Nice of you to chat with me! Use a \`!\` to execute my commands.`);
+		await res.send(`Hello ${conv.getUserName()}! Nice of you to chat with me, use a \`!\` to execute my commands.`);
 
 	});
 
@@ -44,12 +45,3 @@ import {KBBot, KBResponse, KBMessage, KBConversation} from "keybase-bot-builder"
 	bot.start();
 
 })();
-```
-
-## Documentation
-Everything is completely documented. You can view the
-[source code](https://github.com/elijahjcobb/keybase-bot-builder/tree/master/ts) on GitHub.
-
-## Bugs
-If you find any bugs please [create an issue on GitHub](https://github.com/elijahjcobb/keybase-bot-builder/issues) or
-if you are old fashioned email me at [elijah@elijahcobb.com](mailto:elijah@elijahcobb.com).

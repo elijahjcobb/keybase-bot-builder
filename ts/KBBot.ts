@@ -1,11 +1,12 @@
 import Keybase from "keybase-bot";
 import {Dictionary} from "@ejc-tsds/dictionary";
-import {MsgSummary} from "keybase-bot/lib/types/chat1";
+import {MsgSummary, ConvSummary} from "keybase-bot/lib/types/chat1";
 import Minimist from "minimist";
 import {KBCommand} from "./KBCommand";
 import {KBMessage} from "./KBMessage";
 import {KBResponse} from "./KBResponse";
 import {KBLogger} from "./KBLogger";
+import {KBConversation} from "./KBConversation";
 
 /**
  * An interface for a configuration profile.
@@ -13,11 +14,13 @@ import {KBLogger} from "./KBLogger";
  * logging - This will log every event that happens from the bot.
  * debugging - This will add some debug commands to the bot.
  * hostname - The name of the host in the logs, defaults to 'keybase'.
+ * checkAllMessages - If false, it will only run on messages that start with '!', if true, it will run on all messages.
  */
 export interface KBBotConfig {
 	logging?: boolean;
 	debugging?: boolean;
 	hostname?: string;
+	checkAllMessages?: boolean;
 }
 
 /**
@@ -149,6 +152,17 @@ export class KBBot {
 			await this.keybaseBot.chat.watchAllChannelsForNewMessages(async (msg: MsgSummary): Promise<void> => {
 
 				let message: string | undefined = msg.content.text?.body;
+
+				if (message?.charAt(0) !== "!") {
+					if (this.config?.checkAllMessages === true) {
+						KBLogger.log("Got message that is not a command and checkAllMessages is enabled, sending 404 message.");
+						return await this.sendIDKMessage(msg);
+					} else {
+						KBLogger.log("Got message that is not a command and checkAllMessages is disabled, ignoring.");
+						return;
+					}
+				}
+
 				if (message?.charAt(0) === "!") message = message.slice(1);
 				if (!message) return await this.sendIDKMessage(msg);
 				const messageObj: string[] = message.split(" ");
@@ -160,7 +174,7 @@ export class KBBot {
 				if (!command) return await this.sendIDKMessage(msg);
 
 				const messageObject: KBMessage = new KBMessage(msg, commandInput, command.parameters);
-				const response: KBResponse = new KBResponse(msg, this.keybaseBot.chat);
+				const response: KBResponse = new KBResponse(msg.conversationId, this.keybaseBot.chat);
 
 				KBLogger.log("Will pass control to command handler.");
 
@@ -185,10 +199,44 @@ export class KBBot {
 			KBLogger.log("Did watch for messages.");
 
 		})()
-			.then((): void => console.log("stopped watching"))
+			.then((): void => console.log("stopped watching for messages"))
 			.catch((err: any): void => console.error(err));
 
 
+	}
+
+	/**
+	 * Use this to respond to new conversations and send intro messages.
+	 * @param handler A handler to use to send intro messages.
+	 */
+	public onNewConversation(handler: (conv: KBConversation, res: KBResponse) => Promise<void>): void {
+
+		this.keybaseBot.chat.watchForNewConversation((conv: ConvSummary): void => {
+
+			const conversation: KBConversation = new KBConversation(conv);
+			const response: KBResponse = new KBResponse(conversation.getId(), this.keybaseBot.chat);
+
+			KBLogger.log("Will pass control to new conversation handler.");
+
+			handler(conversation, response).then((): void => {
+
+				KBLogger.log("Received control from new conversation handler.");
+
+			}).catch((e: any): void => {
+
+				KBLogger.log("new message handler did fail with message: " + e);
+
+				response.sendCodeBlock(e).catch((): void => {
+
+					KBLogger.log("new message handler did fail to send error message : " + e);
+
+				});
+
+			});
+
+		}, (err: Error): void => { throw err; })
+			.then((): void => console.log("stopped watching for new messages"))
+			.catch((err: any): void => console.error(err));
 	}
 
 	/**

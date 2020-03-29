@@ -7,17 +7,17 @@ import ChatClient from "keybase-bot/lib/chat-client";
  */
 export class KBResponse {
 
-	private readonly message: MsgSummary;
+	private readonly conversationId: string;
 	private readonly chat: ChatClient;
 
 	/**
 	 * Create a new instance of a KBResponse.
-	 * @param message A MsgSummary provided by keybase-bot package.
+	 * @param conversationId The conversationId.
 	 * @param chat A ChatClient provided by keybase-bot package.
 	 */
-	public constructor(message: MsgSummary, chat: ChatClient) {
+	public constructor(conversationId: string, chat: ChatClient) {
 
-		this.message = message;
+		this.conversationId = conversationId;
 		this.chat = chat;
 
 	}
@@ -28,7 +28,7 @@ export class KBResponse {
 	 */
 	public async sendFile(value: string): Promise<void> {
 
-		await this.chat.attach(this.message.conversationId, value);
+		await this.chat.attach(this.conversationId, value);
 
 	}
 
@@ -74,7 +74,7 @@ export class KBResponse {
 		else if (typeof value === "boolean") msg = "`" + value ? "true" : "false" + "`";
 		else msg = value;
 
-		await this.chat.send(this.message.conversationId, {body: msg});
+		await this.chat.send(this.conversationId, {body: msg});
 
 	}
 }

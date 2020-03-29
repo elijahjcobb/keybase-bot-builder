@@ -14,3 +14,4 @@ export * from "./KBCommand";
 export * from "./KBMessage";
 export * from "./KBResponse";
 export * from "./KBTypes";
+export * from "./KBConversation";
