@@ -1,6 +1,7 @@
 import {MsgSummary} from "keybase-bot/lib/types/chat1";
 import {KBCommandModifiers} from "./KBTypes";
 import { ObjectTypeDefinition, StandardType, ObjectType, OptionalType } from "typit";
+import {KBConversation} from "./KBConversation";
 
 /**
  * When the bot receives a message a KBMessage instance is created and provided to you through the handler on a object
@@ -83,6 +84,44 @@ export class KBMessage {
 		if (!doConform) throw new Error("Modifiers do not match specification.");
 
 		return this.convertedMessage as T;
+	}
+
+	/**
+	 * Get the id of the conversation.
+	 */
+	public getConversationId(): string {
+
+		return this.message.conversationId;
+
+	}
+
+	/**
+	 * Get the id of the device that sent the message.
+	 */
+	public getDeviceId(): string {
+
+		return this.message.sender.deviceId;
+
+	}
+
+	/**
+	 * Get the username of the user who sent the message.
+	 */
+	public getUsername(): string {
+
+		if (this.message.sender.username === undefined) throw new Error("Username of sender is undefined.");
+		return this.message.sender.username;
+
+	}
+
+	/**
+	 * Get the name of the device that sent the message.
+	 */
+	public getDeviceName(): string {
+
+		if (this.message.sender.deviceName === undefined) throw new Error("Device name of sender is undefined.");
+		return this.message.sender.deviceName;
+
 	}
 
 }
