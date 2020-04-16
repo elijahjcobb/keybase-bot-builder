@@ -150,6 +150,10 @@ export class KBBot {
 
 			KBLogger.log("Will watch for messages.");
 			await this.keybaseBot.chat.watchAllChannelsForNewMessages(async (msg: MsgSummary): Promise<void> => {
+                // Only process text type messages
+                if (!msg.content.text?) {
+                    return;
+                }
 
 				let message: string | undefined = msg.content.text?.body;
 
