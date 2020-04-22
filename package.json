@@ -1,6 +1,6 @@
 {
   "name": "@elijahjcobb/keybase-bot-builder",
-  "version": "1.1.7",
+  "version": "1.1.9",
   "description": "A helpful wrapper for Keybase's bot API written in Typescript with added functionality.",
   "keywords": [
     "keybase",
@@ -41,7 +41,8 @@
     "keybase-bot": "latest",
     "minimist": "latest",
     "typit": "latest",
-    "@ejc-tsds/dictionary": "latest"
+    "@ejc-tsds/dictionary": "latest",
+    "@element-ts/neon": "latest"
   },
   "devDependencies": {
     "@types/node": "latest",

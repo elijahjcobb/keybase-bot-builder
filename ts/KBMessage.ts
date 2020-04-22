@@ -124,4 +124,13 @@ export class KBMessage {
 
 	}
 
+	/**
+	 * Get the internal keybase message summary object.
+	 */
+	public getKeyBaseMessageSummary(): MsgSummary {
+
+		return this.message;
+
+	}
+
 }

@@ -1,6 +1,6 @@
 import Keybase from "keybase-bot";
 import {Dictionary} from "@ejc-tsds/dictionary";
-import {MsgSummary, ConvSummary} from "keybase-bot/lib/types/chat1";
+import {MsgSummary, ConvSummary, MessageText} from "keybase-bot/lib/types/chat1";
 import Minimist from "minimist";
 import {KBCommand} from "./KBCommand";
 import {KBMessage} from "./KBMessage";
@@ -43,6 +43,8 @@ export class KBBot {
 		this.keybaseBot = keybaseBot;
 		this.commands = new Dictionary<string, KBCommand>();
 		this.config = config;
+
+		this.onMessage = this.onMessage.bind(this);
 
 		if (this.config?.logging === true) KBLogger.enable();
 		else KBLogger.disable();
@@ -134,6 +136,72 @@ export class KBBot {
 
 	}
 
+	private async onMessage(msg: MsgSummary): Promise<void> {
+
+		// Skip non-text messages.
+		if (msg.content.text === undefined) return;
+
+		let message: string | undefined = msg.content.text?.body;
+
+		if (message?.charAt(0) !== "!") {
+			if (this.config?.checkAllMessages === true) {
+				KBLogger.log("Got message that is not a command and checkAllMessages is enabled, sending 404 message.");
+				return await this.sendIDKMessage(msg);
+			} else {
+				KBLogger.log("Got message that is not a command and checkAllMessages is disabled, ignoring.");
+				return;
+			}
+		}
+
+		if (message?.charAt(0) === "!") message = message.slice(1);
+		if (!message) return await this.sendIDKMessage(msg);
+		const messageObj: string[] = message.split(" ");
+		const commandInput: { _: string[] } = Minimist(messageObj) as unknown as {_: string[]};
+		KBLogger.log("Received message '" + JSON.stringify(commandInput) + "' from " + msg.sender.username + "@" + msg.sender.deviceName + ".");
+		const commandName: string = commandInput._[0];
+		KBLogger.log("Looking for command '" + commandName + "'.");
+		const command: KBCommand | undefined = this.commands.get(commandName);
+		if (!command) return await this.sendIDKMessage(msg);
+
+		const messageObject: KBMessage = new KBMessage(msg, commandInput, command.parameters);
+		const response: KBResponse = new KBResponse(msg.conversationId, this.keybaseBot.chat);
+
+		KBLogger.log("Will pass control to command handler.");
+
+		try {
+
+			await command.handler(messageObject, response);
+
+		} catch (e) {
+
+			KBLogger.log("Command handler did fail with message: " + e);
+			await response.sendCodeBlock(e);
+
+		} finally {
+
+			KBLogger.log("Received control from command handler.");
+
+		}
+
+	}
+
+	/**
+	 * Programmatically invoke a command on the bot.
+	 * @param command A message that simulates a message from the user.
+	 * @param message A reference object that provides the context.
+	 */
+	public async invoke(command: string, message: KBMessage): Promise<void> {
+
+		const msg: MsgSummary = message.getKeyBaseMessageSummary();
+		const text: MessageText | undefined = msg.content.text;
+		if (text === undefined) return;
+		text.body = command;
+		msg.content.text = text;
+
+		await this.onMessage(msg);
+
+	}
+
 	/**
 	 * This will make the bot start listening for new messages.
 	 */
@@ -149,56 +217,7 @@ export class KBBot {
 			await this.advertiseCommands();
 
 			KBLogger.log("Will watch for messages.");
-			await this.keybaseBot.chat.watchAllChannelsForNewMessages(async (msg: MsgSummary): Promise<void> => {
-
-				// Skip non-text messages.
-				if (msg.content.text === undefined) return;
-
-				let message: string | undefined = msg.content.text?.body;
-
-				if (message?.charAt(0) !== "!") {
-					if (this.config?.checkAllMessages === true) {
-						KBLogger.log("Got message that is not a command and checkAllMessages is enabled, sending 404 message.");
-						return await this.sendIDKMessage(msg);
-					} else {
-						KBLogger.log("Got message that is not a command and checkAllMessages is disabled, ignoring.");
-						return;
-					}
-				}
-
-				if (message?.charAt(0) === "!") message = message.slice(1);
-				if (!message) return await this.sendIDKMessage(msg);
-				const messageObj: string[] = message.split(" ");
-				const commandInput: { _: string[] } = Minimist(messageObj) as unknown as {_: string[]};
-				KBLogger.log("Received message '" + JSON.stringify(commandInput) + "' from " + msg.sender.username + "@" + msg.sender.deviceName + ".");
-				const commandName: string = commandInput._[0];
-				KBLogger.log("Looking for command '" + commandName + "'.");
-				const command: KBCommand | undefined = this.commands.get(commandName);
-				if (!command) return await this.sendIDKMessage(msg);
-
-				const messageObject: KBMessage = new KBMessage(msg, commandInput, command.parameters);
-				const response: KBResponse = new KBResponse(msg.conversationId, this.keybaseBot.chat);
-
-				KBLogger.log("Will pass control to command handler.");
-
-				try {
-
-					await command.handler(messageObject, response);
-
-				} catch (e) {
-
-					KBLogger.log("Command handler did fail with message: " + e);
-					await response.sendCodeBlock(e);
-
-				} finally {
-
-					KBLogger.log("Received control from command handler.");
-
-				}
-
-
-			});
-
+			await this.keybaseBot.chat.watchAllChannelsForNewMessages(this.onMessage);
 			KBLogger.log("Did watch for messages.");
 
 		})()
