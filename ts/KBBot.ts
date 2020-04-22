@@ -7,6 +7,7 @@ import {KBMessage} from "./KBMessage";
 import {KBResponse} from "./KBResponse";
 import {KBLogger} from "./KBLogger";
 import {KBConversation} from "./KBConversation";
+import {Neon} from "@element-ts/neon";
 
 /**
  * An interface for a configuration profile.
@@ -49,7 +50,7 @@ export class KBBot {
 		if (this.config?.logging === true) KBLogger.enable();
 		else KBLogger.disable();
 
-		if (this.config?.hostname) KBLogger.hostname = this.config.hostname;
+		if (this.config?.hostname) KBLogger.setHostname(this.config.hostname);
 
 	}
 
@@ -197,6 +198,7 @@ export class KBBot {
 		if (text === undefined) return;
 		text.body = command;
 		msg.content.text = text;
+		msg.sentAtMs = Date.now();
 
 		await this.onMessage(msg);
 
@@ -222,7 +224,7 @@ export class KBBot {
 
 		})()
 			.then((): void => console.log("stopped watching for messages"))
-			.catch((err: any): void => console.error(err));
+			.catch((err: any): void => Neon.err(err, true));
 
 
 	}
@@ -257,8 +259,8 @@ export class KBBot {
 			});
 
 		}, (err: Error): void => { throw err; })
-			.then((): void => console.log("stopped watching for new messages"))
-			.catch((err: any): void => console.error(err));
+			.then((): void => Neon.log("stopped watching for new messages"))
+			.catch((err: any): void => Neon.err(err, true));
 	}
 
 	/**

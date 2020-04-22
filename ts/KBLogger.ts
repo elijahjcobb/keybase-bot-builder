@@ -1,31 +1,46 @@
-import Keybase from "keybase-bot";
-
 /**
  * This is a utility class to help with logging all interactions with the bot. It is enabled by default but to disable
  * call disableLogging() on the instance of KBBot that you are using.
  */
+
+import Keybase from "keybase-bot";
+import {Neon} from "@element-ts/neon";
+
 export class KBLogger {
 
-	private static status: boolean = true;
+	private static hostname: string = "keybase";
 	public static bot: Keybase;
-	public static hostname: string = "keybase";
 
 	/**
 	 * Will log the message pretty printed.
 	 * @param msg
 	 */
 	public static log(msg: string): void {
-		if (this.status) console.log(this.bot?.myInfo()?.username + "@" + this.hostname + ": " + msg);
+
+		Neon.log(this.bot?.myInfo()?.username + "@" + this.hostname + ": " + msg, false);
+
+	}
+
+	public static setHostname(value: string): void {
+
+		this.hostname = value;
+		Neon.setTitle(value);
+
 	}
 
 	/**
 	 * Will enable logging.
 	 */
-	public static enable(): void { this.status = true; }
+	public static enable(): void {
+
+		Neon.enable();
+		Neon.setTitle(this.hostname);
+
+	}
 
 	/**
 	 * Will disable logging.
 	 */
-	public static disable(): void { this.status = false; }
+	public static disable(): void { Neon.disable(); }
 
 }
