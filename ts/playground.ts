@@ -13,8 +13,7 @@ import {KBBot, KBResponse, KBMessage, KBConversation} from "./index";
 
 	// The third parameter to the KBBot.init() static method is optional but is shown below
 	// with all optional properties defined.
-	const paperKey: string = FS.readFileSync(Path.resolve("./paperkey.txt")).toString("utf8");
-	const bot: KBBot = await KBBot.init("otto_bot", paperKey, {
+	const bot: KBBot = await KBBot.init("otto_bot", "./paperkey.txt", {
 		logging: true, // whether all events should be logged
 		debugging: true, // whether debugging mode should be enabled (allows extra commands)
 		hostname: "my-keybase-bot", // the hostname to show up in logs

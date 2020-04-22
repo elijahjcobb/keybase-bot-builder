@@ -8,6 +8,8 @@ import {KBResponse} from "./KBResponse";
 import {KBLogger} from "./KBLogger";
 import {KBConversation} from "./KBConversation";
 import {Neon} from "@element-ts/neon";
+import FS from "fs";
+import Path from "path";
 
 /**
  * An interface for a configuration profile.
@@ -277,12 +279,15 @@ export class KBBot {
 	/**
 	 * Use this to create a new bot as it needs to be async.
 	 * @param username The username of the bot.
-	 * @param paperKey A paper key for the bot.
+	 * @param pathToPaperKey A path to the paper key for the bot.
 	 * @param config A configuration profile that follows the KBBotConfig interface.
 	 */
-	public static async init(username: string, paperKey: string, config?: KBBotConfig): Promise<KBBot> {
+	public static async init(username: string, pathToPaperKey: string, config?: KBBotConfig): Promise<KBBot> {
 
 		const bot: Keybase = new Keybase();
+		const absolutePath: string = Path.resolve(pathToPaperKey);
+		if (!FS.existsSync(absolutePath)) throw new Error(`The paper key does not exist: ${absolutePath}.`);
+		const paperKey: string = FS.readFileSync(absolutePath).toString("utf8");
 		await bot.init(username, paperKey);
 
 		return new KBBot(bot, config);
