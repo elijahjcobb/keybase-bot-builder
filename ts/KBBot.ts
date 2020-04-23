@@ -35,6 +35,7 @@ export class KBBot {
 	private readonly keybaseBot: Keybase;
 	private commands: Dictionary<string, KBCommand>;
 	private readonly config: KBBotConfig | undefined;
+	private normalMessageHandler: ((msg: KBMessage, res: KBResponse) => Promise<void>) | undefined;
 
 	/**
 	 * Do not use!
@@ -147,11 +148,18 @@ export class KBBot {
 		let message: string | undefined = msg.content.text?.body;
 
 		if (message?.charAt(0) !== "!") {
+
 			if (this.config?.checkAllMessages === true) {
 				KBLogger.log("Got message that is not a command and checkAllMessages is enabled, sending 404 message.");
 				return await this.sendIDKMessage(msg);
 			} else {
 				KBLogger.log("Got message that is not a command and checkAllMessages is disabled, ignoring.");
+
+				const messageObject: KBMessage = new KBMessage(msg, {}, {});
+				const response: KBResponse = new KBResponse(msg.conversationId, this.keybaseBot.chat);
+
+				if (this.normalMessageHandler) return await this.normalMessageHandler(messageObject, response);
+
 				return;
 			}
 		}
@@ -228,6 +236,17 @@ export class KBBot {
 			.then((): void => console.log("stopped watching for messages"))
 			.catch((err: any): void => Neon.err(err, true));
 
+
+	}
+
+	/**
+	 * Use this to respond to messages that are not commands (don't start with "!"). Note, checkAllMessages must
+	 * be disabled.
+	 * @param handler A handler.
+	 */
+	public onNormalMessage(handler: (msg: KBMessage, res: KBResponse) => Promise<void>): void {
+
+		this.normalMessageHandler = handler;
 
 	}
 
