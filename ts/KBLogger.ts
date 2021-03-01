@@ -9,6 +9,7 @@ import {Neon} from "@element-ts/neon";
 export class KBLogger {
 
 	private static hostname: string = "keybase";
+	public static logger: Neon = new Neon();
 	public static bot: Keybase;
 
 	/**
@@ -17,14 +18,14 @@ export class KBLogger {
 	 */
 	public static log(msg: string): void {
 
-		Neon.log(this.bot?.myInfo()?.username + "@" + this.hostname + ": " + msg, false);
+		this.logger.log(this.bot?.myInfo()?.username + "@" + this.hostname + ": " + msg, false);
 
 	}
 
 	public static setHostname(value: string): void {
 
 		this.hostname = value;
-		Neon.setTitle(value);
+		this.logger.setTitle(value);
 
 	}
 
@@ -33,14 +34,14 @@ export class KBLogger {
 	 */
 	public static enable(): void {
 
-		Neon.enable();
-		Neon.setTitle(this.hostname);
+		this.logger.enable();
+		this.logger.setTitle(this.hostname);
 
 	}
 
 	/**
 	 * Will disable logging.
 	 */
-	public static disable(): void { Neon.disable(); }
+	public static disable(): void { this.logger.disable(); }
 
 }

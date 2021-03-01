@@ -234,7 +234,7 @@ export class KBBot {
 
 		})()
 			.then((): void => console.log("stopped watching for messages"))
-			.catch((err: any): void => Neon.err(err, true));
+			.catch((err: any): void => KBLogger.logger.err(err, true));
 
 
 	}
@@ -280,8 +280,8 @@ export class KBBot {
 			});
 
 		}, (err: Error): void => { throw err; })
-			.then((): void => Neon.log("stopped watching for new messages"))
-			.catch((err: any): void => Neon.err(err, true));
+			.then((): void => KBLogger.logger.log("stopped watching for new messages"))
+			.catch((err: any): void => KBLogger.logger.err(err, true));
 	}
 
 	/**
